@@ -116,8 +116,8 @@ set +e
 ipaddr="$(hostname -i | awk '{ print $1 }')"
 hostname="$(hostname)"
 
-curl "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/queue/$CLUSTER_NAME" -XPOST -d value=$ipaddr -d ttl=60
-#get list of IP from queue
+curl "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/queue/$CLUSTER_NAME" -XPOST -d value="$ipaddr" -d ttl=60
+# get list of IP from queue
 ips1=$(curl "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/queue/$CLUSTER_NAME" | jq -r '.node.nodes[].value')
 
 # Register the current IP in the discovery service
@@ -130,7 +130,16 @@ echo
 echo "=> Registered with discovery service."
 echo
 set +e
-ips2=$(curl "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/?quorum=true" | jq -r '.node.nodes[]?.key' | awk -F'/' '{print $(NF)}')
+
+ips2=""
+c=1
+while (( c<=6 )) && [ -z "$ips2" ]; do
+	ips2=$(curl "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/?quorum=true" | jq -r '.node.nodes[]?.key' | awk -F'/' '{print $(NF)}')
+	echo "-> No peers found in discovery. Trying again in 3 seconds ..."
+	sleep 3
+	(( c++ ))
+done
+echo "=> Found peers in discovery."
 # this remove my ip from the list
 cluster_join="$(join , "${ips1[@]/$ipaddr}" "${ips2[@]/$ipaddr}")"
 /usr/bin/clustercheckcron "monitor" monitor 1 /var/lib/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
