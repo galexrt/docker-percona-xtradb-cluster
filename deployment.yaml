@@ -88,8 +88,6 @@ spec:
         - containerPort: 4567
         - containerPort: 4568
         env:
-        - name: DEBUG
-          value: "true"
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             configMapKeyRef:

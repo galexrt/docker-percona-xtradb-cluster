@@ -154,9 +154,15 @@ cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
 user = mysql
 datadir=/var/lib/mysql
 
-general_log=1
-general_log_file=/dev/stdout
-log_error=/dev/stderr
+; Set UTF8 as charset
+collation-server=utf8_unicode_ci
+character-set-server=utf8
+
+; Log to stdout and stderr
+console = 1
+general_log = 1
+general_log_file = /dev/stdout
+log_error = /dev/stderr
 
 default_storage_engine=InnoDB
 binlog_format=ROW
