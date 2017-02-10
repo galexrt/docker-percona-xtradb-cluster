@@ -61,10 +61,15 @@ if [ ! -e "$DATADIR/init.ok" ]; then
 	chown mysql:mysql /var/log/mysqld.log
 	echo "=> Finished mysqld --initialize"
 	tempSqlFile='/tmp/mysql-first-time.sql'
+	echo "" > "$tempSqlFile"
 	set -- "$@" --init-file="$tempSqlFile"
 	if [ ! -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
 		MYSQL_ROOT_PASSWORD="$(pwmake 128)"
+		echo
+		echo "======================================================"
 		echo "==> GENERATED ROOT PASSWORD: $MYSQL_ROOT_PASSWORD <=="
+		echo "======================================================"
+		echo
 	fi
 	cat >> "$tempSqlFile" <<-EOSQL
 		-- What's done in this file shouldn't be replicated
