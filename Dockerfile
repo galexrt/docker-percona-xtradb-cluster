@@ -38,7 +38,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 EXPOSE 3306 4567 4568
 
-VOLUME ["/var/lib/mysql", "/var/log/mysql"]
+VOLUME ["/var/lib/mysql"]
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["mysqld"]
