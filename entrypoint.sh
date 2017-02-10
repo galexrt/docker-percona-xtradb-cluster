@@ -121,9 +121,9 @@ ips1=$(curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/queue/$CLUSTER_NAM
 
 # Register the current IP in the discovery service
 # key set to expire in 30 sec. There is a cronjob that should update them regularly
-curl -s http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr/ipaddr -XPUT -d value="$ipaddr" -d ttl=30
-curl -s http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr/hostname -XPUT -d value="$hostname" -d ttl=30
-curl -s http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr -XPUT -d ttl=30 -d dir=true -d prevExist=true
+curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr/ipaddr" -XPUT -d value="$ipaddr" -d ttl=30
+curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr/hostname" -XPUT -d value="$hostname" -d ttl=30
+curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr" -XPUT -d ttl=30 -d dir=true -d prevExist=true
 
 echo
 echo "=> Registered with discovery service."
