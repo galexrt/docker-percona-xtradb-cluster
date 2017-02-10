@@ -54,12 +54,12 @@ if [ ! -e "$DATADIR/init.ok" ]; then
         exit 1
     fi
 	mkdir -p "$DATADIR"
-	echo "-> Running mysql_install_db to $DATADIR"
+	echo "-> Running mysqld --initialize to $DATADIR"
 	ls -lah "$DATADIR"
-	mysql_install_db --datadir="$DATADIR"
+	mysqld --initialize --datadir="$DATADIR"
 	chown -R mysql:mysql "$DATADIR"
 	chown mysql:mysql /var/log/mysqld.log
-	echo '=> Finished mysql_install_db'
+	echo "=> Finished mysqld --initialize"
 	tempSqlFile='/tmp/mysql-first-time.sql'
 	set -- "$@" --init-file="$tempSqlFile"
 	if [ ! -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
