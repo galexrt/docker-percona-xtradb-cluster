@@ -22,12 +22,16 @@ function join {
 	echo "${joined%?}"
 }
 
+if [ -n "$DEBUG" ]; then
+    set -x
+fi
+
 # Extra Galera/MySQL setting envs
 wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
 
 # if command starts with an option, prepend mysqld
 if [ "${1:0:1}" = '-' ]; then
-	CMDARG="$*"
+	set -- mysqld "$@"
 fi
 
 if [ -z "$CLUSTER_NAME" ]; then
@@ -39,7 +43,7 @@ if [ -z "$DISCOVERY_SERVICE" ]; then
 	exit 1
 fi
 
-set +e
+set -e
 # Get config
 DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
 if [ ! -e "$DATADIR/init.ok" ]; then
@@ -131,7 +135,7 @@ echo
 echo "-> Joining cluster $cluster_join ..."
 echo
 
-cat > /etc/my.cnf/wsrep.cnf <<EOF
+cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
 [mysqld]
 
 user = mysql
@@ -160,4 +164,4 @@ wsrep_sst_method = xtrabackup-v2
 wsrep_sst_auth = "xtrabackup:$XTRABACKUP_PASSWORD"
 EOF
 
-exec "$@" "$CMDARG"
+exec "$@"
