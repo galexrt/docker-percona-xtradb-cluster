@@ -17,7 +17,7 @@ spec:
       containers:
       - name: percona-xtradb-cluster
         imagePullPolicy: Always
-        image: perconalab/percona-xtradb-cluster:5.7
+        image: galexrt/percona-xtradb-cluster:latest
         ports:
         - containerPort: 3306
           name: mysql

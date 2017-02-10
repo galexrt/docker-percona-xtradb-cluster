@@ -22,6 +22,9 @@ function join {
 	echo "${joined%?}"
 }
 
+# Extra Galera/MySQL setting envs
+wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
+
 set -e
 
 # if command starts with an option, prepend mysqld
@@ -43,8 +46,8 @@ DATADIR="$("mysqld" --verbose --help 2>/dev/null | awk '$1 == "datadir" { print 
 if [ ! -e "$DATADIR/init.ok" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" ] && [ -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ] && \
 		[ -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
-        echo >&2 'error: database is uninitialized and password option is not specified '
-        echo >&2 '  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and YSQL_RANDOM_ROOT_PASSWORD'
+        echo >&2 'Error: Database is uninitialized and password option is not specified '
+        echo >&2 '       You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD'
         exit 1
     fi
 	mkdir -p "$DATADIR"
@@ -147,7 +150,7 @@ innodb_autoinc_lock_mode       = 2
 
 bind_address = 0.0.0.0
 
-wsrep_slave_threads = 2
+wsrep_slave_threads = $wsrep_slave_threads
 wsrep_cluster_address = gcomm://$cluster_join
 wsrep_provider = /usr/lib/galera3/libgalera_smm.so
 wsrep_node_address = $ipaddr
