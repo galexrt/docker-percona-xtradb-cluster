@@ -1,4 +1,19 @@
 #!/bin/bash
+#
+# Copyright (c) 2017 Alexander Trost
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 function join {
 	local IFS="$1"
@@ -15,7 +30,7 @@ if [ "${1:0:1}" = '-' ]; then
 fi
 
 if [ -z "$CLUSTER_NAME" ]; then
-	echo >&2 'Error:  You need to specify CLUSTER_NAME'
+	echo >&2 'Error: You need to specify CLUSTER_NAME'
 	exit 1
 fi
 if [ -z "$DISCOVERY_SERVICE" ]; then
@@ -107,7 +122,7 @@ set +e
 ips2=$(curl "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/?quorum=true" | jq -r '.node.nodes[]?.key' | awk -F'/' '{print $(NF)}')
 # this remove my ip from the list
 cluster_join="$(join , "${ips1[@]/$ipaddr}" "${ips2[@]/$ipaddr}")"
-/usr/bin/clustercheckcron monitor monitor 1 /var/lib/mysql/clustercheck.log 1 &
+/usr/bin/clustercheckcron "monitor" monitor 1 /var/lib/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
 set -e
 
 echo
