@@ -27,7 +27,7 @@ RUN groupadd -r mysql && useradd -r -g mysql mysql && \
 	# don't reverse lookup hostnames, they are usually another container
     sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf && \
 	# comment out any "user" entires in the MySQL config ("docker-entrypoint.sh" or "--user" will handle user switching)
-	sed -ri 's/^user\s/user = mysql/' /etc/mysql/my.cnf && \
+	sed -ri 's/^user.*/user = mysql/' /etc/mysql/my.cnf && \
 	echo 'skip-host-cache\nskip-name-resolve' | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf && \
 	mv /tmp/my.cnf /etc/mysql/my.cnf && \
 	sed -Ei '/log-error/s/^/#/g' -i /etc/mysql/my.cnf
