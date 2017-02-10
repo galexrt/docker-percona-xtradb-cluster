@@ -5,7 +5,8 @@ metadata:
   labels:
     app: pxc-app
 spec:
-  replicas: 3 # tells deployment to run N pods matching the template
+  # tells deployment to run N pods matching the template
+  replicas: 3
   selector:
     app: pxc-app
   template: # create pods using pod definition in this template
@@ -17,7 +18,7 @@ spec:
       containers:
       - name: percona-xtradb-server
         imagePullPolicy: Always
-        image: galexrt/percona-xtradb-cluster:latest
+        image: quay.io/galexrt/percona-xtradb-cluster:latest
         ports:
         - containerPort: 3306
           name: mysql
@@ -58,7 +59,8 @@ metadata:
   labels:
     app: proxysql-app
 spec:
-  replicas: 2 # tells deployment to run N pods matching the template
+  # tells deployment to run N pods matching the template
+  replicas: 2
   selector:
     app: pxc-proxysql
     front: proxysql
