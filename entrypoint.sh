@@ -25,8 +25,6 @@ function join {
 # Extra Galera/MySQL setting envs
 wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
 
-set -e
-
 # if command starts with an option, prepend mysqld
 if [ "${1:0:1}" = '-' ]; then
 	CMDARG="$*"
@@ -41,8 +39,9 @@ if [ -z "$DISCOVERY_SERVICE" ]; then
 	exit 1
 fi
 
+set +e
 # Get config
-DATADIR="$("mysqld" --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }')"
+DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
 if [ ! -e "$DATADIR/init.ok" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" ] && [ -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ] && \
 		[ -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
