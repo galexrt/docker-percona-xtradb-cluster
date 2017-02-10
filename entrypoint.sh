@@ -110,7 +110,6 @@ echo
 echo '-> Registering in the discovery service ...'
 echo
 
-set +e
 # Read the list of registered IP addresses
 ipaddr="$(hostname -i | awk '{ print $1 }')"
 hostname="$(hostname)"
