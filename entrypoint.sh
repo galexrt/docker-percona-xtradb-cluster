@@ -154,7 +154,9 @@ cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
 user = mysql
 datadir=/var/lib/mysql
 
-log_error = "${DATADIR}/error.log"
+general_log=1
+general_log_file=/dev/stdout
+log_error=/dev/stderr
 
 default_storage_engine=InnoDB
 binlog_format=ROW
