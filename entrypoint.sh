@@ -131,12 +131,12 @@ echo "=> Registered with discovery service."
 echo
 set +e
 
-ips2=""
-c=1
-while (( c<=6 )) && [ -z "$ips2" ]; do
+ips2=$(curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/?quorum=true" | jq -r '.node.nodes[]?.key' | awk -F'/' '{print $(NF)}')
+c=0
+while [ -z "$ips2" ] && (( c<=10 )); do
 	ips2=$(curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/?quorum=true" | jq -r '.node.nodes[]?.key' | awk -F'/' '{print $(NF)}')
-	echo "-> No peers found in discovery. Trying again in 3 seconds ..."
-	sleep 3
+	echo "-> No peers found in discovery. Trying again after 2 seconds ..."
+	sleep 2
 	(( c++ ))
 done
 echo "=> Found peers in discovery."
