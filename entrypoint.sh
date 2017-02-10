@@ -25,7 +25,7 @@ function join {
 if [ -n "$DEBUG" ]; then
     set -x
 fi
-
+set -e
 # Extra Galera/MySQL setting envs
 wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
 
@@ -43,7 +43,6 @@ if [ -z "$DISCOVERY_SERVICE" ]; then
 	exit 1
 fi
 
-set -e
 # Get config
 DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
 if [ ! -e "$DATADIR/init.ok" ]; then
@@ -125,11 +124,10 @@ ips1=$(curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/queue/$CLUSTER_NAM
 curl -s http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr/ipaddr -XPUT -d value="$ipaddr" -d ttl=30
 curl -s http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr/hostname -XPUT -d value="$hostname" -d ttl=30
 curl -s http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/$ipaddr -XPUT -d ttl=30 -d dir=true -d prevExist=true
-set -e
+
 echo
 echo "=> Registered with discovery service."
 echo
-set +e
 
 ips2=$(curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/?quorum=true" | jq -r '.node.nodes[]?.key' | awk -F'/' '{print $(NF)}')
 c=0
@@ -139,14 +137,15 @@ while [ -z "$ips2" ] && (( c<=30 )); do
 	sleep 1
 	(( c++ ))
 done
+echo
 echo "=> Found peers in discovery."
+echo
 # this remove my ip from the list
-cluster_join="$(join , "${ips1[@]/$ipaddr}" "${ips2[@]/$ipaddr}")"
+cluster_join="$(join , "${ips1[@]/$ipaddr}" "${ips2[@]/$ipaddr}" | sed -r 's/^,|,$//g')"
 /usr/bin/clustercheckcron "monitor" monitor 1 /var/lib/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
-set -e
 
 echo
-echo "-> Joining cluster $cluster_join ..."
+echo "-> Joining cluster: $cluster_join ..."
 echo
 
 cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
