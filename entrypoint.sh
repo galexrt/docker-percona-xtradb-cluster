@@ -93,6 +93,7 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 		FLUSH PRIVILEGES;
 	EOSQL
 	# sed is for https://bugs.mysql.com/bug.php?id=20545
+	echo "USE mysql;" >> "$tempSqlFile"
 	echo "$(mysql_tzinfo_to_sql /usr/share/zoneinfo | sed 's/Local time zone must be set--see zic manual page/FCTY/')" >> "$tempSqlFile"
 	if [ "$MYSQL_DATABASE" ]; then
 		echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\`;" >> "$tempSqlFile"
@@ -111,8 +112,7 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 	if [ ! -z "$PROMETHEUS_EXPORTER" ] && [ ! -z "$PROMETHEUS_EXPORTER_PASSWORD" ] && [ ! -z "$PROMETHEUS_EXPORTER_USERNAME" ]; then
 		cat >> "$tempSqlFile" <<-EOSQL
 		CREATE USER '$PROMETHEUS_EXPORTER_USERNAME'@'127.0.0.1' IDENTIFIED BY '$PROMETHEUS_EXPORTER_PASSWORD';
-		GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '$PROMETHEUS_EXPORTER_USERNAME'@'127.0.0.1'
-			WITH MAX_USER_CONNECTIONS 4;
+		GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '$PROMETHEUS_EXPORTER_USERNAME'@'127.0.0.1' WITH MAX_USER_CONNECTIONS 4;
 		FLUSH PRIVILEGES;
 		EOSQL
 		echo "=> Added Prometheus User."
