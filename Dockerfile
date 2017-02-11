@@ -1,12 +1,14 @@
 FROM debian:jessie
 MAINTAINER Alexander Trost aka <galexrt@googlemail.com>
 
-ENV PERCONA_MAJOR="5.7" PERCONA_VERSION="5.7.16-27.19-1.jessie" DEBIAN_FRONTEND="noninteractive"
+ENV PERCONA_MAJOR="5.7" PERCONA_VERSION="5.7.16-27.19-1.jessie" JQ_VERSION="1.5" JQ_ARCH="linux64" DEBIAN_FRONTEND="noninteractive"
 
 RUN groupadd -r mysql && useradd -r -g mysql mysql && \
     apt-get update && apt-get -q upgrade -y && \
     apt-get install -y --no-install-recommends \
 		apt-transport-https ca-certificates pwgen curl && \
+    curl -so /usr/bin/jq "https://github.com/stedolan/jq/releases/download/jq-$JQ_VERSION/jq-$JQ_ARCH" && \
+    chmod 755 /usr/bin/jq && \
     curl -so percona-release.deb https://repo.percona.com/apt/percona-release_0.1-4.jessie_all.deb && \
     dpkg -i percona-release.deb && \
 	rm percona-release.deb && \
@@ -32,7 +34,6 @@ RUN groupadd -r mysql && useradd -r -g mysql mysql && \
 	mv /tmp/my.cnf /etc/mysql/my.cnf && \
 	sed -Ei '/log-error/s/^/#/g' -i /etc/mysql/my.cnf
 
-COPY jq /usr/bin/jq
 COPY clustercheckcron /usr/bin/clustercheckcron
 COPY general.cnf /etc/mysql/conf.d/general.cnf
 COPY logging.cnf /etc/mysql/conf.d/logging.cnf
