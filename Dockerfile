@@ -34,6 +34,8 @@ RUN groupadd -r mysql && useradd -r -g mysql mysql && \
 
 COPY jq /usr/bin/jq
 COPY clustercheckcron /usr/bin/clustercheckcron
+COPY general.cnf /etc/mysql/conf.d/general.cnf
+COPY logging.cnf /etc/mysql/conf.d/logging.cnf
 COPY entrypoint.sh /entrypoint.sh
 
 EXPOSE 3306 4567 4568

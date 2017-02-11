@@ -153,34 +153,6 @@ echo
 cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
 [mysqld]
 
-user = mysql
-datadir = /var/lib/mysql
-
-max_connect_errors = 4294967295
-
-; Set UTF8 as charset
-collation-server = utf8_unicode_ci
-character-set-server = utf8
-
-; Log to stdout and stderr
-console = 1
-general_log = 1
-general_log_file = /stdout
-log_error = /stderr
-log_warnings = 1
-slow_query_log = /stdout
-slow_query_log_file = /stdout
-
-default_storage_engine = InnoDB
-binlog_format = ROW
-
-innodb_flush_log_at_trx_commit = 0
-innodb_flush_method            = O_DIRECT
-innodb_file_per_table          = 1
-innodb_autoinc_lock_mode       = 2
-
-bind_address = 0.0.0.0
-
 wsrep_slave_threads = $wsrep_slave_threads
 wsrep_cluster_address = gcomm://$cluster_join
 wsrep_provider = /usr/lib/galera3/libgalera_smm.so

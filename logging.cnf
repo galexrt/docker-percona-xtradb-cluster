@@ -1,0 +1,10 @@
+[mysqld]
+
+; Log to stdout and stderr
+console = 1
+general_log = 1
+general_log_file = /stdout
+log_error = /stderr
+log_warnings = 1
+slow_query_log = /stdout
+slow_query_log_file = /stdout
