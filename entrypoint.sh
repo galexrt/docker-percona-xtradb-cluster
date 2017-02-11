@@ -48,7 +48,7 @@ mkdir -p "/var/lib/mysql-files"
 chown -R mysql:mysql "/var/lib/mysql-files"
 # Get datadir config
 DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
-if [ ! -e "$DATADIR/.init-ok" ]; then
+if [ ! -f "$DATADIR/.init-ok" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" ] && [ -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ] && \
 		[ -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
         echo >&2 'Error: Database is uninitialized and password option is not specified '
@@ -108,6 +108,7 @@ if [ ! -e "$DATADIR/.init-ok" ]; then
 		CREATE USER '$PROMETHEUS_EXPORTER_USERNAME'@'localhost' IDENTIFIED BY '$PROMETHEUS_EXPORTER_PASSWORD';
 		GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '$PROMETHEUS_EXPORTER_USERNAME'@'localhost'
 			WITH MAX_USER_CONNECTIONS 4;
+		FLUSH PRIVILEGES;
 		EOSQL
 		echo "=> Added Prometheus User."
 	fi
