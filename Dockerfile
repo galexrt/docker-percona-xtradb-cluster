@@ -41,4 +41,4 @@ EXPOSE 3306 4567 4568
 VOLUME ["/var/lib/mysql"]
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["mysqld"]
+CMD ["/usr/sbin/mysqld"]

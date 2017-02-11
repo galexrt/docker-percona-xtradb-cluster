@@ -31,7 +31,7 @@ wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
 
 # if command starts with an option, prepend mysqld
 if [ "${1:0:1}" = '-' ]; then
-	set -- mysqld "$@"
+	set -- /usr/sbin/mysqld "$@"
 fi
 
 if [ -z "$CLUSTER_NAME" ]; then
@@ -186,7 +186,7 @@ EOF
 
 echo "==> Starting Percona XtraDB server ..."
 echo
-echo "Executing: $*" 
+echo "Executing: $*"
 echo
 
 exec "$@"
