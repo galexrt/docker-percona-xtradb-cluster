@@ -28,6 +28,7 @@ fi
 set -e
 # Extra Galera/MySQL setting envs
 wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
+PROMETHEUS_EXPORTER_USERNAME="${PROMETHEUS_EXPORTER_USERNAME:-exporter}"
 
 # if command starts with an option, prepend mysqld
 if [ -z "$1" ] || [ "${1:0:1}" = '-' ]; then
