@@ -7,7 +7,7 @@ RUN groupadd -r mysql && useradd -r -g mysql mysql && \
     apt-get update && apt-get -q upgrade -y && \
     apt-get install -y --no-install-recommends \
 		apt-transport-https ca-certificates pwgen curl && \
-    curl -so /usr/bin/jq "https://github.com/stedolan/jq/releases/download/jq-$JQ_VERSION/jq-$JQ_ARCH" && \
+    curl -sLo /usr/bin/jq "https://github.com/stedolan/jq/releases/download/jq-$JQ_VERSION/jq-$JQ_ARCH" && \
     chmod 755 /usr/bin/jq && \
     curl -so percona-release.deb https://repo.percona.com/apt/percona-release_0.1-4.jessie_all.deb && \
     dpkg -i percona-release.deb && \

@@ -60,23 +60,25 @@ data:
   xtrabackup_passwod: my_secure_xtrabackup_password
   mysql_proxy_user: proxyuser
   mysql_proxy_password: s3cret
+  prometheus_exporter_password: s3cret2
+  prometheus_exporter_data_source_name: exporter:s3cret2@(127.0.0.1:3306)/
 ---
 apiVersion: v1
 kind: ReplicationController
 metadata:
   name: pxc-server
   labels:
-    app: pxc-app
+    app: pxc-server
 spec:
   # tells deployment to run N pods matching the template
   replicas: 3
   selector:
-    app: pxc-app
+    app: pxc-server
   template: # create pods using pod definition in this template
     metadata:
       name: pxc
       labels:
-        app: pxc-app
+        app: pxc-server
     spec:
       containers:
       - name: percona-xtradb-server
@@ -108,12 +110,47 @@ spec:
             configMapKeyRef:
               name: pxc-config
               key: xtrabackup_passwod
+        - name: PROMETHEUS_EXPORTER
+          value: "true"
+        - name: PROMETHEUS_EXPORTER_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: prometheus_exporter_password
         volumeMounts:
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
+      - name: mysqld-exporter
+        image: prom/mysqld-exporter:latest
+        ports:
+        - containerPort: 9104
+          name: metrics
+        env:
+        - name: DATA_SOURCE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: prometheus_exporter_data_source_name
       volumes:
       - name: mysql-persistent-storage
         emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxc-server
+  labels:
+    app: pxc-server
+  annotations:
+    prometheus.io/scrape: 'true'
+spec:
+  ports:
+    - port: 9104
+      targetPort: 9104
+      name: "metrics"
+  # label keys and values that must match in order to receive traffic for this service
+  selector:
+    app: pxc-server
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -188,3 +225,17 @@ spec:
   selector:
     app: pxc-proxysql
     front: proxysql
+---
+apiVersion: "monitoring.coreos.com/v1alpha1"
+kind: "ServiceMonitor"
+metadata:
+  name: "pxc-server"
+  labels:
+    app: pxc-server
+spec:
+  selector:
+    matchLabels:
+      app: pxc-server
+  endpoints:
+  - port: "metrics"
+    interval: 30s

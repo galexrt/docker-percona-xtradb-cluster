@@ -55,8 +55,8 @@ spec:
         volumeMounts:
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
-      - name: mysqld_exporter
-        image: prometheus/mysqld-exporter:latest
+      - name: mysqld-exporter
+        image: prom/mysqld-exporter:latest
         ports:
         - containerPort: 9104
           name: metrics
