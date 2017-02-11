@@ -45,6 +45,11 @@ spec:
             configMapKeyRef:
               name: pxc-config
               key: xtrabackup_passwod
+        - name: MONITOR_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: monitor_password
         volumeMounts:
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql

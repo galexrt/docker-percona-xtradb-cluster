@@ -12,3 +12,4 @@ data:
   prometheus_exporter_username: exporter
   prometheus_exporter_password: s3cret2
   prometheus_exporter_data_source_name: exporter:s3cret2@(127.0.0.1:3306)/
+  monitor_password: monitor
