@@ -144,7 +144,7 @@ cluster_join="$(join , "${ips1[@]/$ipaddr}" "${ips2[@]/$ipaddr}" | sed -r 's/^,|
 /usr/bin/clustercheckcron "monitor" monitor 1 /var/lib/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
 
 echo
-echo "-> Will joib cluster: $cluster_join ..."
+echo "-> Will join cluster: $cluster_join ..."
 echo
 
 cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
@@ -185,5 +185,8 @@ wsrep_sst_auth = "xtrabackup:$XTRABACKUP_PASSWORD"
 EOF
 
 echo "==> Starting Percona XtraDB server ..."
+echo
+echo "Executing: $*" 
+echo
 
 exec "$@"
