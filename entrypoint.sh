@@ -64,6 +64,7 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 	chown mysql:mysql /var/log/mysqld.log
 	echo "=> Finished mysqld --initialize"
 	tempSqlFile="/tmp/mysql-first-time.sql"
+	set -- "$@" --init-file="$tempSqlFile"
 	echo "" > "$tempSqlFile"
 	if [ ! -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
 		MYSQL_ROOT_PASSWORD="$(pwmake 128)"
@@ -115,19 +116,6 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 		echo "=> Added Prometheus User."
 	fi
 	echo "=> MySQL first time init preparation done. Ready to run preparation."
-
-	/usr/sbin/mysqld --skip-networking --init-file="$tempSqlFile" &
-	mysql_pid=$!
-
-    until mysqladmin ping >/dev/null 2>&1; do
-        echo -n "."; sleep 0.3
-    done
-    # Tell the MySQL daemon to shutdown.
-    mysqladmin shutdown
-    # Wait for the MySQL daemon to exit.
-	echo "=> Waiting for MySQL daemon to exit ..."
-    wait $mysql_pid
-	echo "=> MySQL daemon exited."
 fi
 touch "$DATADIR/.init-ok"
 chown -R mysql:mysql "$DATADIR"
