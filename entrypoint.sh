@@ -102,12 +102,14 @@ if [ ! -e "$DATADIR/.init-ok" ]; then
 	if [ ! -z "$MYSQL_ONETIME_PASSWORD" ]; then
 		echo "ALTER USER 'root'@'%' PASSWORD EXPIRE;" >> "$tempSqlFile"
 	fi
-	if [ "$PROMETHEUS_EXPORTER" ] && [ ! -z "$PROMETHEUS_EXPORTER_PASSWORD" ] && [ ! -z "$PROMETHEUS_EXPORTER_USERNAME" ]; then
+	echo "-> Checking if prometheus user should be added ..."
+	if [ ! -z "$PROMETHEUS_EXPORTER" ] && [ ! -z "$PROMETHEUS_EXPORTER_PASSWORD" ] && [ ! -z "$PROMETHEUS_EXPORTER_USERNAME" ]; then
 		cat >> "$tempSqlFile" <<-EOSQL
 		CREATE USER '$PROMETHEUS_EXPORTER_USERNAME'@'localhost' IDENTIFIED BY '$PROMETHEUS_EXPORTER_PASSWORD';
 		GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '$PROMETHEUS_EXPORTER_USERNAME'@'localhost'
 			WITH MAX_USER_CONNECTIONS 4;
 		EOSQL
+		echo "=> Added Prometheus User."
 	fi
 	echo
 	echo '=> MySQL first time init preparation done. Ready for start up.'
