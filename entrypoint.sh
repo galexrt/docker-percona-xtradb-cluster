@@ -106,6 +106,9 @@ fi
 touch $DATADIR/init.ok
 chown -R mysql:mysql "$DATADIR"
 
+ln -s /dev/stdout /stdout
+ln -s /dev/stderr /stderr
+
 echo
 echo '-> Registering in the discovery service ...'
 echo
@@ -153,15 +156,20 @@ cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
 user = mysql
 datadir = /var/lib/mysql
 
+max_connect_errors = 4294967295
+
 ; Set UTF8 as charset
 collation-server = utf8_unicode_ci
 character-set-server = utf8
 
 ; Log to stdout and stderr
 console = 1
-general_log = 0
-log_error = /var/log/mysql/error.log
+general_log = 1
+general_log_file = /stdout
+log_error = /stderr
 log_warnings = 1
+slow_query_log = /stdout
+slow_query_log_file = /stdout
 
 default_storage_engine = InnoDB
 binlog_format = ROW
