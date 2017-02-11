@@ -44,7 +44,9 @@ if [ -z "$DISCOVERY_SERVICE" ]; then
 	exit 1
 fi
 
-# Get config
+mkdir -p "/var/lib/mysql-files"
+chown -R mysql:mysql "/var/lib/mysql-files"
+# Get datadir config
 DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
 if [ ! -e "$DATADIR/.init-ok" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" ] && [ -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ] && \
