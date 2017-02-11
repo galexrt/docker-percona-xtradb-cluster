@@ -15,7 +15,7 @@ RUN groupadd -r mysql && useradd -r -g mysql mysql && \
 	# also, we set debconf keys to make APT a little quieter
     apt-get update && \
     { \
-        echo "percona-server-server-${PERCONA_MAJOR}" percona-server-server/data-dir select ''; \
+        echo "percona-server-server-${PERCONA_MAJOR}" percona-server-server/datadir select ''; \
         echo "percona-server-server-${PERCONA_MAJOR}" percona-server-server/root_password password ''; \
     } | debconf-set-selections && \
 	apt-get install -y --force-yes percona-xtradb-cluster-57 && \

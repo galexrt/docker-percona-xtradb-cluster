@@ -46,7 +46,7 @@ fi
 
 # Get config
 DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
-if [ ! -e "$DATADIR/init.ok" ]; then
+if [ ! -e "$DATADIR/.init-ok" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" ] && [ -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ] && \
 		[ -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
         echo >&2 'Error: Database is uninitialized and password option is not specified '
@@ -111,7 +111,7 @@ if [ ! -e "$DATADIR/init.ok" ]; then
 	echo '=> MySQL first time init preparation done. Ready for start up.'
 	echo
 fi
-touch "$DATADIR/init.ok"
+touch "$DATADIR/.init-ok"
 chown -R mysql:mysql "$DATADIR"
 
 echo
