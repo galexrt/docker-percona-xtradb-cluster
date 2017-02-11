@@ -79,7 +79,7 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 		SET @@SESSION.SQL_LOG_BIN=0;
 		CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 		GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION;
-		ALTER USER 'root'@'127.0.0.1' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+		SET PASSWORD FOR 'root'@'127.0.0.1' = PASSWORD('$MYSQL_ROOT_PASSWORD');
 		CREATE USER IF NOT EXISTS 'xtrabackup'@'127.0.0.1' IDENTIFIED BY '$XTRABACKUP_PASSWORD';
 		GRANT RELOAD,PROCESS,LOCK TABLES,REPLICATION CLIENT ON *.* TO 'xtrabackup'@'127.0.0.1';
 		CREATE USER IF NOT EXISTS 'monitor'@'%' IDENTIFIED BY '$MONITOR_PASSWORD';
@@ -116,14 +116,12 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 	fi
 	echo "=> MySQL first time init preparation done. Ready to run preparation."
 
-	/usr/sbin/mysqld --bind-address=127.0.0.1 &
+	/usr/sbin/mysqld --skip-networking --init-file="$tempSqlFile" &
 	mysql_pid=$!
 
     until mysqladmin ping >/dev/null 2>&1; do
         echo -n "."; sleep 0.3
     done
-    # create the default database from the ADDed file.
-    mysql -h 127.0.0.1 -u root < "$tempSqlFile"
     # Tell the MySQL daemon to shutdown.
     mysqladmin shutdown
     # Wait for the MySQL daemon to exit.
