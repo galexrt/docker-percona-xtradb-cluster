@@ -30,7 +30,7 @@ set -e
 wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
 
 # if command starts with an option, prepend mysqld
-if [ "${1:0:1}" = '-' ]; then
+if [ -z "$1" ] || [ "${1:0:1}" = '-' ]; then
 	set -- /usr/sbin/mysqld "$@"
 fi
 
