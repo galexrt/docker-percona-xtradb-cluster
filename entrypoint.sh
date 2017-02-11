@@ -74,19 +74,19 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 		echo "======================================================"
 		echo
 	fi
+	# What's done in this file shouldn't be replicated
+	# or products like mysql-fabric won't work
 	cat >> "$tempSqlFile" <<-EOSQL
-		-- What's done in this file shouldn't be replicated
-		--  or products like mysql-fabric won't work
 		SET @@SESSION.SQL_LOG_BIN=0;
-		CREATE USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+		CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 		GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION;
 		ALTER USER 'root'@'127.0.0.1' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-		CREATE USER 'xtrabackup'@'127.0.0.1' IDENTIFIED BY '$XTRABACKUP_PASSWORD';
+		CREATE USER IF NOT EXISTS 'xtrabackup'@'127.0.0.1' IDENTIFIED BY '$XTRABACKUP_PASSWORD';
 		GRANT RELOAD,PROCESS,LOCK TABLES,REPLICATION CLIENT ON *.* TO 'xtrabackup'@'127.0.0.1';
-		CREATE USER 'monitor'@'%' IDENTIFIED BY '$MONITOR_PASSWORD';
-		CREATE USER 'monitor'@'127.0.0.1' IDENTIFIED BY '$MONITOR_PASSWORD';
-		GRANT REPLICATION CLIENT ON *.* TO monitor@'%' IDENTIFIED BY '$MONITOR_PASSWORD';
-		GRANT PROCESS ON *.* TO monitor@127.0.0.1 IDENTIFIED BY '$MONITOR_PASSWORD';
+		CREATE USER IF NOT EXISTS 'monitor'@'%' IDENTIFIED BY '$MONITOR_PASSWORD';
+		CREATE USER IF NOT EXISTS 'monitor'@'127.0.0.1' IDENTIFIED BY '$MONITOR_PASSWORD';
+		GRANT REPLICATION CLIENT ON *.* TO 'monitor'@'%' IDENTIFIED BY '$MONITOR_PASSWORD';
+		GRANT PROCESS ON *.* TO 'monitor'@'127.0.0.1' IDENTIFIED BY '$MONITOR_PASSWORD';
 		DROP DATABASE IF EXISTS test;
 		FLUSH PRIVILEGES;
 	EOSQL
