@@ -111,7 +111,7 @@ if [ ! -e "$DATADIR/init.ok" ]; then
 	echo '=> MySQL first time init preparation done. Ready for start up.'
 	echo
 fi
-touch $DATADIR/init.ok
+touch "$DATADIR/init.ok"
 chown -R mysql:mysql "$DATADIR"
 
 echo
@@ -149,7 +149,7 @@ echo "=> Found peers in discovery."
 echo
 # this remove my ip from the list
 cluster_join="$(join , "${ips1[@]/$ipaddr}" "${ips2[@]/$ipaddr}" | sed -r 's/^,|,$//g')"
-/usr/bin/clustercheckcron "monitor" monitor 1 /var/lib/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
+/usr/bin/clustercheckcron "monitor" monitor 1 /var/log/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
 
 echo
 echo "-> Will join cluster: $cluster_join ..."
