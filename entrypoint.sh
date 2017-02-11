@@ -151,20 +151,20 @@ cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
 [mysqld]
 
 user = mysql
-datadir=/var/lib/mysql
+datadir = /var/lib/mysql
 
 ; Set UTF8 as charset
-collation-server=utf8_unicode_ci
-character-set-server=utf8
+collation-server = utf8_unicode_ci
+character-set-server = utf8
 
 ; Log to stdout and stderr
 console = 1
-general_log = 1
-general_log_file = /dev/stdout
-log_error = /dev/stderr
+general_log = 0
+log_error = /var/log/mysql/error.log
+log_warnings = 1
 
-default_storage_engine=InnoDB
-binlog_format=ROW
+default_storage_engine = InnoDB
+binlog_format = ROW
 
 innodb_flush_log_at_trx_commit = 0
 innodb_flush_method            = O_DIRECT
@@ -178,7 +178,7 @@ wsrep_cluster_address = gcomm://$cluster_join
 wsrep_provider = /usr/lib/galera3/libgalera_smm.so
 wsrep_node_address = $ipaddr
 
-wsrep_cluster_name="$CLUSTER_NAME"
+wsrep_cluster_name = "$CLUSTER_NAME"
 
 wsrep_sst_method = xtrabackup-v2
 wsrep_sst_auth = "xtrabackup:$XTRABACKUP_PASSWORD"
