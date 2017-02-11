@@ -9,3 +9,5 @@ data:
   xtrabackup_passwod: my_secure_xtrabackup_password
   mysql_proxy_user: proxyuser
   mysql_proxy_password: s3cret
+  prometheus_exporter_password: s3cret2
+  prometheus_exporter_data_source_name: exporter:s3cret2@(127.0.0.1:3306)/
