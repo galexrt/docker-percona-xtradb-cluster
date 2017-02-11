@@ -4,7 +4,8 @@ MAINTAINER Alexander Trost aka <galexrt@googlemail.com>
 ENV PERCONA_MAJOR="5.7" PERCONA_VERSION="5.7.16-27.19-1.jessie" JQ_VERSION="1.5" JQ_ARCH="linux64" DEBIAN_FRONTEND="noninteractive"
 
 RUN groupadd -r mysql && useradd -r -g mysql mysql && \
-    apt-get update && apt-get -q upgrade -y && \
+    apt-get update && \
+    apt-get -q upgrade -y && \
     apt-get install -y --no-install-recommends \
 		apt-transport-https ca-certificates pwgen curl socat && \
     curl -sLo /usr/bin/jq "https://github.com/stedolan/jq/releases/download/jq-$JQ_VERSION/jq-$JQ_ARCH" && \
