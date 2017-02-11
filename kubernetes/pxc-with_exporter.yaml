@@ -3,17 +3,17 @@ kind: ReplicationController
 metadata:
   name: pxc-server
   labels:
-    app: pxc-app
+    app: pxc-server
 spec:
   # tells deployment to run N pods matching the template
   replicas: 3
   selector:
-    app: pxc-app
+    app: pxc-server
   template: # create pods using pod definition in this template
     metadata:
       name: pxc
       labels:
-        app: pxc-app
+        app: pxc-server
     spec:
       containers:
       - name: percona-xtradb-server
@@ -69,6 +69,23 @@ spec:
       volumes:
       - name: mysql-persistent-storage
         emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxc-server
+  labels:
+    app: pxc-server
+  annotations:
+    prometheus.io/scrape: 'true'
+spec:
+  ports:
+    - port: 9104
+      targetPort: 9104
+      name: "metrics"
+  # label keys and values that must match in order to receive traffic for this service
+  selector:
+    app: pxc-server
 ---
 apiVersion: v1
 kind: ReplicationController

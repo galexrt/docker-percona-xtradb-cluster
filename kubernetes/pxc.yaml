@@ -3,17 +3,17 @@ kind: ReplicationController
 metadata:
   name: pxc-server
   labels:
-    app: pxc-app
+    app: pxc-server
 spec:
   # tells deployment to run N pods matching the template
   replicas: 3
   selector:
-    app: pxc-app
+    app: pxc-server
   template: # create pods using pod definition in this template
     metadata:
       name: pxc
       labels:
-        app: pxc-app
+        app: pxc-server
     spec:
       containers:
       - name: percona-xtradb-server

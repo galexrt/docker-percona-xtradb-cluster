@@ -1,0 +1,13 @@
+apiVersion: "monitoring.coreos.com/v1alpha1"
+kind: "ServiceMonitor"
+metadata:
+  name: "pxc-server"
+  labels:
+    app: pxc-server
+spec:
+  selector:
+    matchLabels:
+      app: pxc-server
+  endpoints:
+  - port: "metrics"
+    interval: 30s
