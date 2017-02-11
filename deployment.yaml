@@ -60,6 +60,7 @@ data:
   xtrabackup_passwod: my_secure_xtrabackup_password
   mysql_proxy_user: proxyuser
   mysql_proxy_password: s3cret
+  prometheus_exporter_username: exporter
   prometheus_exporter_password: s3cret2
   prometheus_exporter_data_source_name: exporter:s3cret2@(127.0.0.1:3306)/
 ---
@@ -112,6 +113,11 @@ spec:
               key: xtrabackup_passwod
         - name: PROMETHEUS_EXPORTER
           value: "true"
+        - name: PROMETHEUS_EXPORTER_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: prometheus_exporter_username
         - name: PROMETHEUS_EXPORTER_PASSWORD
           valueFrom:
             configMapKeyRef:

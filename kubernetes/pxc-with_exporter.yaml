@@ -47,6 +47,11 @@ spec:
               key: xtrabackup_passwod
         - name: PROMETHEUS_EXPORTER
           value: "true"
+        - name: PROMETHEUS_EXPORTER_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: prometheus_exporter_username
         - name: PROMETHEUS_EXPORTER_PASSWORD
           valueFrom:
             configMapKeyRef:
