@@ -74,6 +74,10 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 		echo "======================================================"
 		echo
 	fi
+	# sed is for https://bugs.mysql.com/bug.php?id=20545
+	echo "USE mysql;" >> "$tempSqlFile"
+	echo "$(mysql_tzinfo_to_sql /usr/share/zoneinfo | sed 's/Local time zone must be set--see zic manual page/FCTY/')" >> "$tempSqlFile"
+	
 	# What's done in this file shouldn't be replicated
 	# or products like mysql-fabric won't work
 	cat >> "$tempSqlFile" <<-EOSQL
@@ -92,9 +96,7 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 		DROP DATABASE IF EXISTS test;
 		FLUSH PRIVILEGES;
 	EOSQL
-	# sed is for https://bugs.mysql.com/bug.php?id=20545
-	echo "USE mysql;" >> "$tempSqlFile"
-	echo "$(mysql_tzinfo_to_sql /usr/share/zoneinfo | sed 's/Local time zone must be set--see zic manual page/FCTY/')" >> "$tempSqlFile"
+
 	if [ "$MYSQL_DATABASE" ]; then
 		echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\`;" >> "$tempSqlFile"
 	fi
