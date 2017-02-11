@@ -2,9 +2,8 @@
 
 ; Log to stdout and stderr
 console = 1
-general_log = 1
-general_log_file = /stdout
-log_error = /stderr
+general_log = 0
+log_error = /var/log/mysql/error.log
 log_warnings = 1
-slow_query_log = /stdout
-slow_query_log_file = /stdout
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/slow-query.log

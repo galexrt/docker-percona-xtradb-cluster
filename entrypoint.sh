@@ -43,10 +43,6 @@ if [ -z "$DISCOVERY_SERVICE" ]; then
 	exit 1
 fi
 
-# Link stdout and stderr to work around mysql issue
-ln -s /dev/stdout /stdout
-ln -s /dev/stderr /stderr
-
 # Get config
 DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
 if [ ! -e "$DATADIR/init.ok" ]; then
