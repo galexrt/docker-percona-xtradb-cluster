@@ -1,2 +1,5 @@
 [mysql]
 host = 127.0.0.1
+
+[client]
+host = 127.0.0.1
