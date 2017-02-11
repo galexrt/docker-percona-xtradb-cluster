@@ -29,6 +29,7 @@ set -e
 # Extra Galera/MySQL setting envs
 wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
 PROMETHEUS_EXPORTER_USERNAME="${PROMETHEUS_EXPORTER_USERNAME:-exporter}"
+MONITOR_PASSWORD="${MONITOR_PASSWORD:-monitor}"
 
 # if command starts with an option, prepend mysqld
 if [ -z "$1" ] || [ "${1:0:1}" = '-' ]; then
@@ -83,7 +84,7 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 		CREATE USER 'xtrabackup'@'127.0.0.1' IDENTIFIED BY '$XTRABACKUP_PASSWORD';
 		GRANT RELOAD,PROCESS,LOCK TABLES,REPLICATION CLIENT ON *.* TO 'xtrabackup'@'127.0.0.1';
 		GRANT REPLICATION CLIENT ON *.* TO monitor@'%' IDENTIFIED BY 'monitor';
-		GRANT PROCESS ON *.* TO monitor@127.0.0.1 IDENTIFIED BY 'monitor';
+		GRANT PROCESS ON *.* TO monitor@127.0.0.1 IDENTIFIED BY '$MONITOR_PASSWORD';
 		DROP DATABASE IF EXISTS test;
 		FLUSH PRIVILEGES;
 	EOSQL
@@ -154,7 +155,7 @@ echo "=> Found peers in discovery."
 echo
 # this remove my ip from the list
 cluster_join="$(join , "${ips1[@]/$ipaddr}" "${ips2[@]/$ipaddr}" | sed -r 's/^,|,$//g')"
-/usr/bin/clustercheckcron "monitor" monitor 1 /var/log/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
+/usr/bin/clustercheckcron "monitor" "$MONITOR_PASSWORD" 1 /var/log/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
 
 echo
 echo "-> Will join cluster: $cluster_join ..."

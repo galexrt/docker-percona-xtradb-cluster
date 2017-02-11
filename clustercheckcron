@@ -16,12 +16,13 @@ if [[ $1 == '-h' || $1 == '--help' ]];then
     exit
 fi
 
-MYSQL_USERNAME="${1-clustercheckuser}"
-MYSQL_PASSWORD="${2-clustercheckpassword!}"
+MYSQL_USERNAME="${1:-clustercheckuser}"
+MYSQL_PASSWORD="${2:-clustercheckpassword!}"
 AVAILABLE_WHEN_DONOR=${3:-0}
 ERR_FILE="${4:-/dev/null}"
 AVAILABLE_WHEN_READONLY=${5:-1}
 DEFAULTS_EXTRA_FILE=${6:-/etc/my.cnf}
+MYSQL_HOST="${7:-127.0.0.1}"
 
 # CLUSTER_NAME to be set in enviroment
 # DISCOVERY_SERVICE to be set in enviroment
@@ -30,6 +31,9 @@ DEFAULTS_EXTRA_FILE=${6:-/etc/my.cnf}
 TIMEOUT=10
 
 EXTRA_ARGS=""
+if [[ -n "$MYSQL_HOST" ]]; then
+    EXTRA_ARGS="$EXTRA_ARGS --host=${MYSQL_HOST}"
+fi
 if [[ -n "$MYSQL_USERNAME" ]]; then
     EXTRA_ARGS="$EXTRA_ARGS --user=${MYSQL_USERNAME}"
 fi
