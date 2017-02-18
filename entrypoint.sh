@@ -45,18 +45,19 @@ if [ -z "$DISCOVERY_SERVICE" ]; then
 	exit 1
 fi
 
-mkdir -p "/var/lib/mysql-files"
+mkdir -p "/var/lib/mysql-files" "$DATADIR"
 chown -R mysql:mysql "/var/lib/mysql-files"
 # Get datadir config
+cd "$DATADIR" || { echo "Can't access data dir '$DATADIR'"; exit 1; }
+cd .. || { echo "Can't go down one from the datadir."; exit 1; }
 DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
-if [ ! -f "$DATADIR/.init-ok" ]; then
+if [ ! -f "$DATADIR/.init-ok" ] || [ ! -f ".init-ok" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" ] && [ -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ] && \
 		[ -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
         echo >&2 'Error: Database is uninitialized and password option is not specified '
         echo >&2 '       You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD'
         exit 1
     fi
-	mkdir -p "$DATADIR"
 	echo "-> Running mysqld --initialize to $DATADIR"
 	ls -lah "$DATADIR"
 	mysqld --initialize --datadir="$DATADIR"
@@ -121,6 +122,7 @@ if [ ! -f "$DATADIR/.init-ok" ]; then
 	fi
 	echo "=> MySQL first time init preparation done. Ready to run preparation."
 fi
+touch ".init-ok"
 touch "$DATADIR/.init-ok"
 chown -R mysql:mysql "$DATADIR"
 
