@@ -32,6 +32,8 @@ PROMETHEUS_EXPORTER_USERNAME="${PROMETHEUS_EXPORTER_USERNAME:-exporter}"
 MONITOR_PASSWORD="${MONITOR_PASSWORD:-monitor}"
 DATADIR="${DATADIR:-/var/lib/mysql}"
 
+echo "datadir = $DATADIR" >> /etc/mysql/conf.d/general.cnf
+
 # if command starts with an option, prepend mysqld path
 if [ -z "$1" ] || [ "${1:0:1}" = '-' ]; then
 	set -- /usr/sbin/mysqld "$@"
