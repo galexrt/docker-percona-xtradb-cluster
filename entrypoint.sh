@@ -50,6 +50,7 @@ fi
 
 mkdir -p "/var/lib/mysql-files" "$DATADIR"
 chown -R mysql:mysql "/var/lib/mysql-files"
+chown mysql:mysql "$DATADIR"
 # Get datadir config
 cd "$DATADIR" || { echo "Can't access data dir '$DATADIR'"; exit 1; }
 cd .. || { echo "Can't go down one from the datadir."; exit 1; }

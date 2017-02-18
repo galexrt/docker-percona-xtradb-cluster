@@ -1,7 +1,6 @@
 [mysqld]
 
 user = mysql
-datadir = /var/lib/mysql
 
 ignore-db-dir = lost+found
 
