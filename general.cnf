@@ -3,6 +3,8 @@
 user = mysql
 datadir = /var/lib/mysql
 
+ignore-db-dir = lost+found
+
 max_connect_errors = 4294967295
 
 ; Set UTF8 as charset
