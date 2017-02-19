@@ -27,7 +27,7 @@ if [ -n "$DEBUG" ]; then
 fi
 set -e
 # Extra Galera/MySQL setting envs
-wsrep_slave_threads="${WSREP_SLAVE_THREADS:-2}"
+WSREP_SLAVE_THREADS="${WSREP_SLAVE_THREADS:-2}"
 PROMETHEUS_EXPORTER_USERNAME="${PROMETHEUS_EXPORTER_USERNAME:-exporter}"
 MONITOR_PASSWORD="${MONITOR_PASSWORD:-monitor}"
 DATADIR="${DATADIR:-/var/lib/mysql}"
@@ -172,7 +172,7 @@ echo
 cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
 [mysqld]
 
-wsrep_slave_threads = $wsrep_slave_threads
+wsrep_slave_threads = $WSREP_SLAVE_THREADS
 wsrep_cluster_address = gcomm://$cluster_join
 wsrep_provider = /usr/lib/galera3/libgalera_smm.so
 wsrep_node_address = $ipaddr
