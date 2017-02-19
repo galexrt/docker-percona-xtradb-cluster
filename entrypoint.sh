@@ -55,7 +55,7 @@ chown mysql:mysql "$DATADIR"
 cd "$DATADIR" || { echo "Can't access data dir '$DATADIR'"; exit 1; }
 cd .. || { echo "Can't go down one from the datadir."; exit 1; }
 DATADIR="$(mysqld --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }' | sed 's#/$##')"
-if [ ! -f "$DATADIR/.init-ok" ] && [ ! -f ".init-ok" ]; then
+if [ ! -d "$DATADIR/mysql" ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" ] && [ -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ] && \
 		[ -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
         echo >&2 'Error: Database is uninitialized and password option is not specified '
@@ -82,7 +82,7 @@ if [ ! -f "$DATADIR/.init-ok" ] && [ ! -f ".init-ok" ]; then
 	# sed is for https://bugs.mysql.com/bug.php?id=20545
 	echo "USE mysql;" >> "$tempSqlFile"
 	echo "$(mysql_tzinfo_to_sql /usr/share/zoneinfo | sed 's/Local time zone must be set--see zic manual page/FCTY/')" >> "$tempSqlFile"
-	
+
 	# What's done in this file shouldn't be replicated
 	# or products like mysql-fabric won't work
 	cat >> "$tempSqlFile" <<-EOSQL
@@ -126,8 +126,6 @@ if [ ! -f "$DATADIR/.init-ok" ] && [ ! -f ".init-ok" ]; then
 	fi
 	echo "=> MySQL first time init preparation done. Ready to run preparation."
 fi
-touch ".init-ok"
-touch "$DATADIR/.init-ok"
 chown -R mysql:mysql "$DATADIR"
 
 echo
