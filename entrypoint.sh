@@ -32,6 +32,12 @@ PROMETHEUS_EXPORTER_USERNAME="${PROMETHEUS_EXPORTER_USERNAME:-exporter}"
 MONITOR_PASSWORD="${MONITOR_PASSWORD:-monitor}"
 DATADIR="${DATADIR:-/var/lib/mysql}"
 MYSQL_USE_SSL="${MYSQL_USE_SSL:-false}"
+# SSL Cert paths
+MYSQL_CERT_CA="${MYSQL_CERT_CA:-/etc/mysql/certs/ca-cert.pem}"
+MYSQL_CERT_SERVER_KEY="${MYSQL_CERT_SERVER_KEY:-/etc/mysql/certs/server-key.pem}"
+MYSQL_CERT_SERVER_CERT="${MYSQL_CERT_SERVER_CERT:-/etc/mysql/certs/server-cert.pem}"
+MYSQL_CERT_CLIENT_KEY="${MYSQL_CERT_CLIENT_KEY:-/etc/mysql/certs/client-key.pem}"
+MYSQL_CERT_CLIENT_CERT="${MYSQL_CERT_CLIENT_CERT:-/etc/mysql/certs/client-cert.pem}"
 
 echo "datadir = $DATADIR" >> /etc/mysql/conf.d/general.cnf
 

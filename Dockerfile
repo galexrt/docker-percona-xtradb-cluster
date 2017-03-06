@@ -33,7 +33,8 @@ RUN groupadd -r mysql && useradd -r -g mysql mysql && \
 	sed -ri 's/^user.*/user = mysql/' /etc/mysql/my.cnf && \
 	echo 'skip-host-cache\nskip-name-resolve' | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf && \
 	mv /tmp/my.cnf /etc/mysql/my.cnf && \
-	sed -Ei '/log-error/s/^/#/g' -i /etc/mysql/my.cnf
+	sed -Ei '/log-error/s/^/#/g' -i /etc/mysql/my.cnf && \
+    mkdir -p /etc/mysql/certs
 
 COPY clustercheckcron /usr/bin/clustercheckcron
 COPY general.cnf /etc/mysql/conf.d/general.cnf

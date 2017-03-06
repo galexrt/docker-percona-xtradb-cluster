@@ -1,0 +1,122 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: pxc-server
+  labels:
+    app: pxc-server
+spec:
+  serviceName: "pxc-service"
+  replicas: 1
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-persistent-storage
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "rbd"
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
+  template:
+    metadata:
+      name: pxc
+      labels:
+        app: pxc-server
+    spec:
+      terminationGracePeriodSeconds: 40
+      securityContext:
+        fsGroup: 999
+      containers:
+      - name: percona-xtradb-server
+        image: quay.io/galexrt/percona-xtradb-cluster:latest
+        imagePullPolicy: Always
+        ports:
+        - name: mysql
+          containerPort: 3306
+        - containerPort: 4567
+        - containerPort: 4568
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: root_password
+        - name: DISCOVERY_SERVICE
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: discovery_service
+        - name: CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: cluster_name
+        - name: XTRABACKUP_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: xtrabackup_passwod
+        - name: PROMETHEUS_EXPORTER
+          value: "true"
+        - name: PROMETHEUS_EXPORTER_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: prometheus_exporter_username
+        - name: PROMETHEUS_EXPORTER_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: prometheus_exporter_password
+        - name: MONITOR_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: monitor_password
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 300
+            timeoutSeconds: 5
+      - name: mysqld-exporter
+        image: prom/mysqld-exporter:latest
+        args:
+        - -collect.binlog_size=true
+        - -collect.info_schema.processlist=true
+        - -collect.info_schema.clientstats=true
+        - -collect.info_schema.innodb_metrics=true
+        - -collect.info_schema.innodb_tablespaces=true
+        - -collect.info_schema.processlist=true
+        - -collect.info_schema.processlist.min_time=2
+        - -collect.info_schema.query_response_time=true
+        - -collect.info_schema.tables=true
+        - -collect.info_schema.tablestats=true
+        - -collect.info_schema.userstats=true
+        - -collect.perf_schema.eventsstatements=true
+        - -collect.perf_schema.eventswaits=true
+        - -collect.perf_schema.file_events=true
+        - -collect.perf_schema.indexiowaits=true
+        - -collect.perf_schema.tableiowaits=true
+        - -collect.perf_schema.tablelocks=true
+        ports:
+        - name: metrics
+          containerPort: 9104
+        env:
+        - name: DATA_SOURCE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: pxc-config
+              key: prometheus_exporter_data_source_name
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9104
+          initialDelaySeconds: 120
+          timeoutSeconds: 3
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 75m

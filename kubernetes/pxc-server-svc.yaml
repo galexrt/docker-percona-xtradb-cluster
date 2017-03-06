@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxc-service
+  labels:
+    app: pxc-service
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+      name: "mysql"
+    - port: 9104
+      targetPort: 9104
+      name: "metrics"
+  selector:
+    app: pxc-server
