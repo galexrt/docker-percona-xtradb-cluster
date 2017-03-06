@@ -11,6 +11,7 @@ Current Percona-xtradb-cluster version: `5.7`
 
 ***
 
-percona/percona-docker Percona xtraDB optimized for Kubernetes clustering.
+percona/percona-docker Percona xtraDB optimized for Kubernetes clustering and simple SSL configuration.
+(**SSL configuration hasn't been tested yet!**)
 
 TODO Add documentation on how to use the image
