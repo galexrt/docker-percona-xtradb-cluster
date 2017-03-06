@@ -27,10 +27,11 @@ if [ -n "$DEBUG" ]; then
 fi
 set -e
 # Extra Galera/MySQL setting envs
-WSREP_SLAVE_THREADS="${WSREP_SLAVE_THREADS:-2}"
+WSREP_SLAVE_THREADS="${WSREP_SLAVE_THREADS:-$(nproc)}"
 PROMETHEUS_EXPORTER_USERNAME="${PROMETHEUS_EXPORTER_USERNAME:-exporter}"
 MONITOR_PASSWORD="${MONITOR_PASSWORD:-monitor}"
 DATADIR="${DATADIR:-/var/lib/mysql}"
+MYSQL_USE_SSL="${MYSQL_USE_SSL:-false}"
 
 echo "datadir = $DATADIR" >> /etc/mysql/conf.d/general.cnf
 
@@ -166,7 +167,7 @@ cluster_join="$(join , "${ips1[@]/$ipaddr}" "${ips2[@]/$ipaddr}" | sed -r 's/^,|
 /usr/bin/clustercheckcron "monitor" "$MONITOR_PASSWORD" 1 /var/log/mysql/clustercheck.log 1 "/etc/mysql/my.cnf" &
 
 echo
-echo "-> Will join cluster: $cluster_join ..."
+echo "-> Will join cluster $CLUSTER_NAME with addresses: $cluster_join ..."
 echo
 
 cat > /etc/mysql/conf.d/wsrep.cnf <<EOF
@@ -182,6 +183,28 @@ wsrep_cluster_name = "$CLUSTER_NAME"
 wsrep_sst_method = xtrabackup-v2
 wsrep_sst_auth = "xtrabackup:$XTRABACKUP_PASSWORD"
 EOF
+
+if [ "$MYSQL_USE_SSL" == "True" ] || [ "$MYSQL_USE_SSL" == "true" ]; then
+	cat > /etc/mysql/conf.d/ssl.cnf <<EOF
+[mysqld]
+wsrep_provider_options="socket.ssl_key=$MYSQL_CERT_SERVER_KEY;socket.ssl_cert=$MYSQL_CERT_SERVER_CERT;socket.ssl_ca=$MYSQL_CERT_CA"
+ssl-ca = "$MYSQL_CERT_CA"
+ssl-key = "$MYSQL_CERT_SERVER_KEY"
+ssl-cert = "$MYSQL_CERT_SERVER_CERT"
+
+# MySQL Client Configuration
+[client]
+ssl-ca = "$MYSQL_CERT_CA"
+ssl-key = "$MYSQL_CERT_CLIENT_KEY"
+ssl-cert = "$MYSQL_CERT_CLIENT_CERT"
+
+[sst]
+encrypt = 3
+tca = "$MYSQL_CERT_CA"
+tkey = "$MYSQL_CERT_CLIENT_KEY"
+tcert = "$MYSQL_CERT_CLIENT_CERT"
+EOF
+fi
 
 echo "==> Starting Percona XtraDB server ..."
 echo
