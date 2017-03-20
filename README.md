@@ -15,3 +15,6 @@ percona/percona-docker Percona xtraDB optimized for Kubernetes clustering and si
 (**SSL configuration hasn't been tested yet!**)
 
 TODO Add documentation on how to use the image
+
+# ToDO List
+* [ ] Add separate directory for Kubernetes to mount ConfigMaps to
