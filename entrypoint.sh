@@ -39,6 +39,8 @@ MYSQL_CERT_SERVER_CERT="${MYSQL_CERT_SERVER_CERT:-/etc/mysql/certs/server-cert.p
 MYSQL_CERT_CLIENT_KEY="${MYSQL_CERT_CLIENT_KEY:-/etc/mysql/certs/client-key.pem}"
 MYSQL_CERT_CLIENT_CERT="${MYSQL_CERT_CLIENT_CERT:-/etc/mysql/certs/client-cert.pem}"
 
+MYSQL_ADDITIONAL_INCLUDE_PATH="${MYSQL_ADDITIONAL_INCLUDE_PATH:-}"
+
 echo "datadir = $DATADIR" >> /etc/mysql/conf.d/general.cnf
 
 # if command starts with an option, prepend mysqld path
@@ -189,6 +191,18 @@ wsrep_cluster_name = "$CLUSTER_NAME"
 wsrep_sst_method = xtrabackup-v2
 wsrep_sst_auth = "xtrabackup:$XTRABACKUP_PASSWORD"
 EOF
+
+if [ ! -z "$MYSQL_ADDITIONAL_INCLUDE_PATH" ]; then
+	if [ -d "$MYSQL_ADDITIONAL_INCLUDE_PATH" ]; then
+		echo "!includedir $MYSQL_ADDITIONAL_INCLUDE_PATH"
+	else
+    	if [ -f "$MYSQL_ADDITIONAL_INCLUDE_PATH" ]; then
+    		echo "!include $MYSQL_ADDITIONAL_INCLUDE_PATH"
+		else
+			echo "=>> WARNING!! MYSQL_ADDITIONAL_INCLUDE_PATH is not a directory nor a file! Check the path."
+    	fi
+    fi
+fi
 
 if [ "$MYSQL_USE_SSL" == "True" ] || [ "$MYSQL_USE_SSL" == "true" ]; then
 	cat > /etc/mysql/conf.d/ssl.cnf <<EOF
