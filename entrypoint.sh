@@ -161,7 +161,7 @@ echo
 
 ips2=$(curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/?quorum=true" | jq -r '.node.nodes[]?.key' | awk -F'/' '{print $(NF)}')
 c=0
-while [ -z "$ips2" ] && (( c<=30 )); do
+while [ -z "$ips2" ] && (( $c <= 30 )); do
 	ips2=$(curl -s "http://$DISCOVERY_SERVICE/v2/keys/pxc-cluster/$CLUSTER_NAME/?quorum=true" | jq -r '.node.nodes[]?.key' | awk -F'/' '{print $(NF)}')
 	echo "-> No peers found in discovery. Try $c from 30 ..."
 	sleep 1
