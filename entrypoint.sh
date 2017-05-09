@@ -194,10 +194,10 @@ EOF
 
 if [ ! -z "$MYSQL_ADDITIONAL_INCLUDE_PATH" ]; then
 	if [ -d "$MYSQL_ADDITIONAL_INCLUDE_PATH" ]; then
-		echo "!includedir $MYSQL_ADDITIONAL_INCLUDE_PATH"
+		echo "!includedir $MYSQL_ADDITIONAL_INCLUDE_PATH" >> /etc/mysql/my.cnf
 	else
     	if [ -f "$MYSQL_ADDITIONAL_INCLUDE_PATH" ]; then
-    		echo "!include $MYSQL_ADDITIONAL_INCLUDE_PATH"
+    		echo "!include $MYSQL_ADDITIONAL_INCLUDE_PATH" >> /etc/mysql/my.cnf
 		else
 			echo "=>> WARNING!! MYSQL_ADDITIONAL_INCLUDE_PATH is not a directory nor a file! Check the path."
     	fi
