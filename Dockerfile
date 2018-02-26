@@ -1,5 +1,5 @@
 FROM debian:jessie
-MAINTAINER Alexander Trost aka <galexrt@googlemail.com>
+LABEL maintainer="Alexander Trost aka <galexrt@googlemail.com>"
 
 ENV PERCONA_MAJOR="5.7" PERCONA_VERSION="5.7.16-27.19-1.jessie" JQ_VERSION="1.5" JQ_ARCH="linux64" DEBIAN_FRONTEND="noninteractive"
 
